@@ -1,0 +1,8 @@
+<seelog minlevel="trace">
+    <outputs formatid="common">
+        <rollingfile type="date" filename="/home/taylor/log/seelog/test.log"  maxrolls="5" datepattern="2006-01-02"/>
+    </outputs>
+    <formats>
+        <format id="common" format="%Date %Time [%LEV] [%File:%Line] [%Func] %Msg%n" />
+    </formats>
+</seelog>
