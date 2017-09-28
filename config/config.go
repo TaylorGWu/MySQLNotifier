@@ -37,3 +37,7 @@ func ConfigNotifier() {
 		panic("unmarshal yamlfile into NotifierConfig fail!")
 	}
 }
+
+func Get() NotifierConfig  {
+	return notifierConfig
+}
