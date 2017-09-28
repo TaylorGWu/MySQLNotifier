@@ -1,0 +1,2 @@
+# MySQLNotifier
+golang MySQLNotifier library 
