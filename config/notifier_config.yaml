@@ -1,13 +1,12 @@
 log_config_path: "path"
 
-
 mysql:
-    addr: "127.0.0.1:3306"
+    address: "127.0.0.1:3306"
     user: "root"
-    pass: "root"
+    password: "root"
     dbname: "youmi"
 
 redis:
-    addr: "127.0.0.1:6379"
+    address: "127.0.0.1:6379"
     db: 0
     password:
