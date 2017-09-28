@@ -10,8 +10,9 @@ var logger log.LoggerInterface
 func New() {
 	config.ConfigNotifier()
 	globalConfig := config.Get()
-	logger, err := log.LoggerFromConfigAsFile(globalConfig.LogConfigPath)
 
+	var err error
+	logger, err = log.LoggerFromConfigAsFile(globalConfig.LogConfigPath)
 	if err != nil {
 		panic("init seelog fail!")
 	}
@@ -22,4 +23,8 @@ func New() {
 
 func Del() {
 	logger.Flush()
+}
+
+func Get() log.LoggerInterface {
+	return  logger
 }
