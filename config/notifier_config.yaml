@@ -1,4 +1,4 @@
-log_config_path: "path"
+log_config_path: "/home/taylor/code/go/src/MySQLNotifier/config/log_config.xml"
 
 mysql:
     address: "127.0.0.1:3306"

@@ -27,7 +27,7 @@ type Redis struct {
 }
 
 func ConfigNotifier() {
-	yamlFile, err := ioutil.ReadFile("notifier_config.yaml")
+	yamlFile, err := ioutil.ReadFile("../../config/notifier_config.yaml")
 	if err != nil {
 		panic("read notifier_config.yaml fail!")
 	}

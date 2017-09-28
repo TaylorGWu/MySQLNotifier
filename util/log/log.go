@@ -8,6 +8,7 @@ import (
 var logger log.LoggerInterface
 
 func New() {
+	config.ConfigNotifier()
 	globalConfig := config.Get()
 	logger, err := log.LoggerFromConfigAsFile(globalConfig.LogConfigPath)
 
