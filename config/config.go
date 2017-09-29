@@ -7,23 +7,23 @@ import (
 
 type NotifierConfig struct {
 	LogConfigPath string `yaml:"log_config_path"`
-	MySQL MySQL	`yaml:"mysql"`
-	Redis Redis
+	MySQL         MySQL  `yaml:"mysql"`
+	Redis         Redis
 }
 
 var notifierConfig NotifierConfig
 
 type MySQL struct {
-	Address string
-	User string
+	Address  string
+	User     string
 	Password string
-	DBName string `yaml:"dbname"`
+	DBName   string `yaml:"dbname"`
 }
 
 type Redis struct {
-	Address string
+	Address  string
 	Password string
-	DB int `yaml:"db"`
+	DB       int `yaml:"db"`
 }
 
 func ConfigNotifier() {
@@ -38,6 +38,6 @@ func ConfigNotifier() {
 	}
 }
 
-func Get() NotifierConfig  {
+func Get() NotifierConfig {
 	return notifierConfig
 }

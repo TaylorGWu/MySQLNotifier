@@ -1,8 +1,8 @@
 package log
 
 import (
-	log "github.com/cihub/seelog"
 	"MySQLNotifier/config"
+	log "github.com/cihub/seelog"
 )
 
 var logger log.LoggerInterface
@@ -26,5 +26,5 @@ func Del() {
 }
 
 func Get() log.LoggerInterface {
-	return  logger
+	return logger
 }
