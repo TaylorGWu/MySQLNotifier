@@ -1,10 +1,10 @@
-log_config_path: "/home/taylor/code/go/src/MySQLNotifier/config/log_config.xml"
+log_config_path: "/home/taylor/code/Go/src/MySQLNotifier/config/log_config.xml"
 
 mysql:
     address: "127.0.0.1:3306"
     user: "root"
-    password: "root"
-    dbname: "youmi"
+    password: "mysqladmin"
+    dbname: "taynets_orm"
 
 redis:
     address: "127.0.0.1:6379"
