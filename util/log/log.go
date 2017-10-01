@@ -1,14 +1,18 @@
 package log
 
 import (
+	"MySQLNotifier/config"
 	log "github.com/cihub/seelog"
 )
 
 var logger log.LoggerInterface
 
 func New() {
-	logger, err := log.LoggerFromConfigAsFile("path")
+	config.ConfigNotifier()
+	globalConfig := config.Get()
 
+	var err error
+	logger, err = log.LoggerFromConfigAsFile(globalConfig.LogConfigPath)
 	if err != nil {
 		panic("init seelog fail!")
 	}
@@ -19,4 +23,8 @@ func New() {
 
 func Del() {
 	logger.Flush()
+}
+
+func Get() log.LoggerInterface {
+	return logger
 }

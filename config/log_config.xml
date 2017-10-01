@@ -1,0 +1,10 @@
+<seelog>
+	<outputs formatid="main">
+		<buffered size="10000" flushperiod="1000">
+			<rollingfile type="date" filename="/home/taylor/log/seelog/test.log" datepattern="2006.01.02" maxrolls="30"/>
+		</buffered>
+	</outputs>
+	<formats>
+        <format id="main" format="%Date %Time [%LEV] [%File:%Line] [%Func] %Msg%n"/>
+    </formats>
+</seelog>
