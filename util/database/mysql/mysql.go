@@ -42,7 +42,7 @@ func (dbUtil *MySQLUtil) Close() {
 	dbUtil.DB.Close()
 }
 
-func (dbUtil *MySQLUtil) IsBinLogOpen() (err error) {
+func (dbUtil *MySQLUtil) IsBinLogOpen() (status string, err error) {
 	sql := "show variables like 'log_bin'"
 	rows, err := dbUtil.DB.Query(sql)
 
@@ -52,15 +52,33 @@ func (dbUtil *MySQLUtil) IsBinLogOpen() (err error) {
 		return
 	}
 
+	var variableName, value string
 	for rows.Next() {
-		var value string
-		if err = rows.Scan(&value); err != nil {
+		if err = rows.Scan(&variableName ,&value); err != nil {
 			log.Get().Errorf("mysql query IsBinLog extract value fail:%s", err)
 			return
 		}
-		fmt.Println(value)
+	}
+	status = value
+	return
+}
+
+func (dbUtil *MySQLUtil) ShowMasterStatus() (file string, position int , err error){
+	sql := "show master status"
+	rows, err := dbUtil.DB.Query(sql)
+
+	defer  rows.Close()
+	if err != nil {
+		log.Get().Errorf("mysql query ShowMasterStatus:%s\n", err)
+		return
 	}
 
-	fmt.Println(string(rows))
+	var binlogDoDB, binlogIgnoreDB string
+	for rows.Next() {
+		if err = rows.Scan(&file, &position, &binlogDoDB, &binlogIgnoreDB); err != nil {
+			log.Get().Errorf("mysql query ShowMasterStatus extract value fail:%s", err)
+			return
+		}
+	}
 	return
 }

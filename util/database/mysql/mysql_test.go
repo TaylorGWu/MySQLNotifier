@@ -15,8 +15,16 @@ func TestMySQL(t *testing.T) {
 	defer Get().Close()
 
 	if err != nil {
-		t.Errorf("mysql init fail:%s", err)
+		t.Errorf("mysql init fail:%s\n", err)
 	}
 
-	Get().IsBinLogOpen()
+	_, err = Get().IsBinLogOpen()
+	if err != nil {
+		t.Errorf("mysql IsBinLogOpen fail:%s\n", err)
+	}
+
+	_, _, err = Get().ShowMasterStatus()
+	if err != nil {
+		t.Errorf("mysql ShowMasterStatus fail:%s\n", err)
+	}
 }
