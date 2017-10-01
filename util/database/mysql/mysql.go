@@ -82,3 +82,7 @@ func (dbUtil *MySQLUtil) ShowMasterStatus() (file string, position int , err err
 	}
 	return
 }
+
+func (dnUtil *MySQLUtil) GetLatelyBinLog(binLogFile string, position int) {
+	sql := fmt.Sprintf("show binlog events in %s from %d", binLogFile, position)
+}
