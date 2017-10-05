@@ -3,6 +3,9 @@ package BinLogExtractor
 import (
 	"MySQLNotifier/util/database/mysql"
 	"MySQLNotifier/util/log"
+	"fmt"
+	"strconv"
+	"time"
 )
 
 type BinLogExtractor struct {
@@ -13,19 +16,11 @@ type BinLogExtractor struct {
 
 var Extractor BinLogExtractor
 
-func New() {
+func New() (err error){
 	mysql.New()
 	Extractor.MySQLUtil = mysql.Get()
-}
-
-func Get() (*BinLogExtractor){
-	return &Extractor
-}
-
-func (extractor *BinLogExtractor) UpdateCurrentBinLogStatus() (err error){
-	extractor.CurrentBinLogFile, extractor.CurrentBinLogPostion, err =
+	Extractor.CurrentBinLogFile, Extractor.CurrentBinLogPostion, err =
 		Extractor.MySQLUtil.ShowMasterStatus()
-
 	if err != nil {
 		log.Get().Errorf("UpdateCurrentBinLogStatus fail:%s\n", err)
 		return
@@ -33,5 +28,40 @@ func (extractor *BinLogExtractor) UpdateCurrentBinLogStatus() (err error){
 	return
 }
 
+func Get() (*BinLogExtractor){
+	return &Extractor
+}
+
+func (extractor *BinLogExtractor) UpdateCurrentBinLogStatus() (err error){
+	records, length, err := extractor.MySQLUtil.GetLatelyBinLog(extractor.CurrentBinLogFile, extractor.CurrentBinLogPostion)
+
+	// in case of no new bin log
+	if 0 != length {
+		extractor.CurrentBinLogFile = records[length-1]["Log_name"]
+		extractor.CurrentBinLogPostion, _ = strconv.Atoi(records[length-1]["End_log_pos"])
+
+		fmt.Println("-----begin-----")
+		fmt.Printf("%#v", extractor)
+		for i := 0; i < length; i++ {
+			fmt.Println(records[i]["Info"])
+		}
+		fmt.Println("-----end-----")
+	}
+	return
+}
+
 func (extractor *BinLogExtractor) Extract() {
+}
+
+func (extractor *BinLogExtractor) Run() {
+	err := New()
+	if err != nil {
+		log.Get().Errorf("extractor:Run fail:%s\n", err)
+		panic("extractor:Run fail")
+	}
+
+	for {
+		Extractor.UpdateCurrentBinLogStatus()
+		time.Sleep(10*time.Second)
+	}
 }

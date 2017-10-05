@@ -69,7 +69,7 @@ func (dbUtil *MySQLUtil) ShowMasterStatus() (file string, position int , err err
 
 	defer  rows.Close()
 	if err != nil {
-		log.Get().Errorf("mysql query ShowMasterStatus:%s\n", err)
+		log.Get().Errorf("mysql query ShowMasterStatus fail:%s\n", err)
 		return
 	}
 
@@ -83,6 +83,38 @@ func (dbUtil *MySQLUtil) ShowMasterStatus() (file string, position int , err err
 	return
 }
 
-func (dnUtil *MySQLUtil) GetLatelyBinLog(binLogFile string, position int) {
-	sql := fmt.Sprintf("show binlog events in %s from %d", binLogFile, position)
+func (dnUtil *MySQLUtil) GetLatelyBinLog(binLogFile string, position int) (records [](map[string]string), length int, err error){
+	sql := fmt.Sprintf("show binlog events in '%s' from %d", binLogFile, position)
+	fmt.Println(sql)
+
+	rows, err := dbUtil.DB.Query(sql)
+	if err != nil {
+		log.Get().Errorf("mysql query GetLatelyBinLog fail:%s\n", err)
+		return
+	}
+
+	columns, _ := rows.Columns()
+	scanArgs := make([]interface{}, len(columns))
+	values := make([]interface{}, len(columns))
+
+	for i := range values {
+		scanArgs[i] = &values[i]
+	}
+
+	records = make([](map[string]string), 100, 1000)
+	for rows.Next() {
+		err = rows.Scan(scanArgs...)
+		if err != nil {
+			log.Get().Errorf("mysql query GetLatelyBinLog extract value fail:%s\n", err)
+			continue
+		}
+
+		record := make(map[string]string)
+		for i, col := range values {
+			record[columns[i]] = string(col.([]byte))
+		}
+		records[length] = record
+		length += 1
+	}
+	return
 }

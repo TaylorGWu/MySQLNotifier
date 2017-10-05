@@ -4,6 +4,7 @@ import (
 	"testing"
 	"MySQLNotifier/util/log"
 	"MySQLNotifier/config"
+	"fmt"
 )
 
 func TestMySQL(t *testing.T) {
@@ -27,4 +28,10 @@ func TestMySQL(t *testing.T) {
 	if err != nil {
 		t.Errorf("mysql ShowMasterStatus fail:%s\n", err)
 	}
+
+	records, err := Get().GetLatelyBinLog("mysql-bin.000007", 0)
+	if err != nil {
+		t.Errorf("mysql GetLatelyBinLog fail:%s\n", err)
+	}
+	fmt.Printf("%#v\n", records)
 }
