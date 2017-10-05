@@ -6,12 +6,14 @@ import (
 	"MySQLNotifier/util/string_tool"
 	"strconv"
 	"time"
+	"fmt"
 )
 
 type BinLogExtractor struct {
 	MySQLUtil *mysql.MySQLUtil
 	CurrentBinLogFile string	// record current binlog_file' name
 	CurrentBinLogPostion int	// record current binlog_file' position
+	BinLogChannel chan string // read for BinLogParser
 }
 
 var Extractor BinLogExtractor
@@ -20,6 +22,8 @@ func New() (err error){
 	mysql.New()
 	Extractor.MySQLUtil = mysql.Get()
 	Extractor.CurrentBinLogFile, Extractor.CurrentBinLogPostion, err = Extractor.MySQLUtil.ShowMasterStatus()
+	Extractor.BinLogChannel = make(chan string, 1000)	// init one direction channel for write
+
 	if err != nil {
 		log.Get().Errorf("UpdateCurrentBinLogStatus fail:%s\n", err)
 		return
@@ -29,6 +33,10 @@ func New() (err error){
 
 func Get() (*BinLogExtractor){
 	return &Extractor
+}
+
+func GetBinLogChannel() (*chan string){
+	return &(Extractor.BinLogChannel)
 }
 
 func (extractor *BinLogExtractor) UpdateCurrentBinLogStatus() (err error){
@@ -47,14 +55,13 @@ func (extractor *BinLogExtractor) UpdateCurrentBinLogStatus() (err error){
 		extractor.CurrentBinLogFile = records[length-1]["Log_name"]
 		extractor.CurrentBinLogPostion, _ = strconv.Atoi(records[length-1]["End_log_pos"])
 
-		/*
 		fmt.Println("-----begin-----")
 		fmt.Printf("%#v", extractor)
 		for i := 0; i < length; i++ {
-			fmt.Printf("%d:%s\n", i, records[i]["Info"])
+			Extractor.BinLogChannel <- records[i]["Info"]
+			//fmt.Printf("%d:%s\n", i, records[i]["Info"])
 		}
 		fmt.Println("-----end-----")
-		*/
 	}
 	return
 }
@@ -68,6 +75,13 @@ func (extractor *BinLogExtractor) Run() {
 		log.Get().Errorf("extractor:Run fail:%s\n", err)
 		panic("extractor:Run fail")
 	}
+
+	go func() {
+		for {
+			info := <-extractor.BinLogChannel
+			fmt.Printf("read:%s\n", info)
+		}
+	}()
 
 	for {
 		Extractor.UpdateCurrentBinLogStatus()
