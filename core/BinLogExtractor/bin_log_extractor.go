@@ -4,7 +4,6 @@ import (
 	"MySQLNotifier/util/database/mysql"
 	"MySQLNotifier/util/log"
 	"MySQLNotifier/util/string_tool"
-	"fmt"
 	"strconv"
 	"time"
 )
