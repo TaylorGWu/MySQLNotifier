@@ -4,9 +4,12 @@ import (
 	"MySQLNotifier/util/database/mysql"
 	"MySQLNotifier/util/log"
 	"MySQLNotifier/util/string_tool"
+	"MySQLNotifier/core/BinLogParser"
 	"strconv"
 	"time"
 	"fmt"
+	"MySQLNotifier/common"
+	"encoding/json"
 )
 
 type BinLogExtractor struct {
@@ -58,8 +61,14 @@ func (extractor *BinLogExtractor) UpdateCurrentBinLogStatus() (err error){
 		fmt.Println("-----begin-----")
 		fmt.Printf("%#v", extractor)
 		for i := 0; i < length; i++ {
-			Extractor.BinLogChannel <- records[i]["Info"]
-			//fmt.Printf("%d:%s\n", i, records[i]["Info"])
+			binLog := common.BinLog{
+				EventType: records[i]["Event_type"],
+				Info: records[i]["Info"],
+			}
+
+			binLogBytes, _ := json.Marshal(binLog)
+			binLogStr := string(binLogBytes)
+			Extractor.BinLogChannel <- binLogStr
 		}
 		fmt.Println("-----end-----")
 	}
@@ -77,10 +86,12 @@ func (extractor *BinLogExtractor) Run() {
 	}
 
 	go func() {
+		/*
 		for {
 			info := <-extractor.BinLogChannel
 			fmt.Printf("read:%s\n", info)
-		}
+		}*/
+		BinLogParser.Parser.Run()
 	}()
 
 	for {
